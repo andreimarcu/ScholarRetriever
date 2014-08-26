@@ -2,10 +2,9 @@
 Small script that retrieves Scholar resources locally.
 
 Author: Andrei Marcu <andrei@marcu.net>
-https://github.com/andreimarcu/[]
+https://github.com/andreimarcu/ScholarRetriever
 """
 import easywebdav
-import shutil
 import config
 import os
 
@@ -41,7 +40,7 @@ class ScholarRetriever(object):
 
                     print os.getcwd()
 
-                    if os.path.exists(bare):
+                    if os.path.exists(bare) or bare[-4:] == ".URL":
                         print "Skipping " + os.path.join(class_id, path, bare)
                     else:
                         print "Getting " + os.path.join(class_id, path, bare)
