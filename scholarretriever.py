@@ -38,8 +38,6 @@ class ScholarRetriever(object):
                 else:
                     bare = os.path.basename(e.name)
 
-                    print os.getcwd()
-
                     if os.path.exists(bare) or bare[-4:] == ".URL":
                         print "Skipping " + os.path.join(class_id, path, bare)
                     else:
