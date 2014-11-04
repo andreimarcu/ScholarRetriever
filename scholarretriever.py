@@ -32,11 +32,13 @@ class ScholarRetriever(object):
             os.chdir(path)
 
             for e in self.w.ls(path)[1:]:
-                if e.name[-1] == "/":
-                    bare = os.path.basename(e.name[:-1])
+                fname = e.name.replace("%20", " ")
+
+                if fname[-1] == "/":
+                    bare = os.path.basename(fname[:-1])
                     get_contents(bare)
                 else:
-                    bare = os.path.basename(e.name)
+                    bare = os.path.basename(fname)
 
                     if os.path.exists(bare) or bare[-4:] == ".URL":
                         print "Skipping " + os.path.join(class_id, path, bare)

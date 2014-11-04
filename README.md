@@ -13,7 +13,7 @@ Usage
 -----
 
 * Clone this repository 
-* ```pip install easywebdav```
+* ```pip install -r requirements.txt```
 * Copy config.example.py to config.py and edit to your liking 
 * Run ```python scholarretriever.py ```
 
