@@ -5,17 +5,19 @@ Author: Andrei Marcu <andrei@marcu.net>
 https://github.com/andreimarcu/ScholarRetriever
 """
 import easywebdav
+import urllib
 import config
 import os
 
 
 class ScholarRetriever(object):
 
-    def __init__(self, username, password, classes, path):
+    def __init__(self, username, password, classes, path, verbose):
         self.w = easywebdav.connect("scholar.vt.edu", username=username,
                                     protocol="https", password=password,
                                     path="/dav")
         self.classes = classes
+        self.verbose = verbose
         os.chdir(path)
 
 
@@ -32,7 +34,7 @@ class ScholarRetriever(object):
             os.chdir(path)
 
             for e in self.w.ls(path)[1:]:
-                fname = e.name.replace("%20", " ")
+                fname = urllib.unquote(e.name)
 
                 if fname[-1] == "/":
                     bare = os.path.basename(fname[:-1])
@@ -41,9 +43,11 @@ class ScholarRetriever(object):
                     bare = os.path.basename(fname)
 
                     if os.path.exists(bare) or bare[-4:] == ".URL":
-                        print "Skipping " + os.path.join(class_id, path, bare)
+                        if self.verbose:
+                            print "Skipping " + os.path.join(class_id, path, bare)
                     else:
-                        print "Getting " + os.path.join(class_id, path, bare)
+                        if self.verbose:
+                            print "Getting " + os.path.join(class_id, path, bare)
                         self.w.download(os.path.join(path, bare), bare)
 
             os.chdir("..")
@@ -61,5 +65,6 @@ class ScholarRetriever(object):
 
 if __name__ == '__main__':    
     sr = ScholarRetriever(config.username, config.password,
-                          config.classes, config.path)
+                          config.classes, config.path,
+                          config.verbose)
     sr.get_classes()

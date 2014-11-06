@@ -23,6 +23,7 @@ Config
 * username: Your hokie PID
 * password: if you leave it as such you will be securely prompted for it
 * path: where to download the resources
+* verbose: whether to print retrieved/skipped files or not (useful if used as a cronjob)
 * classes: a list of a tuple of class names and scholar site ids to retrieve
 
 
