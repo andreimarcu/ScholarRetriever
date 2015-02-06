@@ -52,7 +52,7 @@ class ScholarRetriever(object):
                 else:
                     l_fpath = dav_path_to_local(e.name, class_id)
 
-                    if os.path.exists(l_fpath) or l_fpath[-4:] == "URL":
+                    if os.path.exists(l_fpath) or e.name[-4:] == ".URL":
                         if self.verbose:
                             print "Skipping " + l_fpath
 
