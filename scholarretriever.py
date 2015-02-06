@@ -14,54 +14,56 @@ class ScholarRetriever(object):
 
     def __init__(self, username, password, classes, path, verbose):
         self.w = easywebdav.connect("scholar.vt.edu", username=username,
-                                    protocol="https", password=password,
-                                    path="/dav")
+                                    protocol="https", password=password)
         self.classes = classes
+        self.path = path
         self.verbose = verbose
-        os.chdir(path)
 
 
     def get_classes(self):
         for c in self.classes:
             self.get_class(c[0], c[1])
 
+
     def get_class(self, class_id, uid):
 
-        def get_contents(path="."):
-            if not os.path.exists(path):
-                os.makedirs(path)
+        path = "/dav/{0}/".format(uid)
 
-            os.chdir(path)
+        def get_contents(path):
+
+            def dav_path_to_local(path, class_id):
+                path = urllib.unquote(path)
+                path = path.split("/")[2:]
+                path[0] = class_id
+                path = os.path.join(self.path, *path)
+
+                return path
+
+            l_path = dav_path_to_local(path, class_id)
+
+            if not os.path.exists(l_path):
+                os.makedirs(l_path)
 
             for e in self.w.ls(path)[1:]:
-                fname = urllib.unquote(e.name)
 
-                if fname[-1] == "/":
-                    bare = os.path.basename(fname[:-1])
-                    get_contents(bare)
+                if e.name[-1] == "/":
+                    get_contents(e.name)
+
                 else:
-                    bare = os.path.basename(fname)
+                    l_fpath = dav_path_to_local(e.name, class_id)
 
-                    if os.path.exists(bare) or bare[-4:] == ".URL":
+                    if os.path.exists(l_fpath) or l_fpath[-4:] == "URL":
                         if self.verbose:
-                            print "Skipping " + os.path.join(class_id, path, bare)
+                            print "Skipping " + l_fpath
+
                     else:
                         if self.verbose:
-                            print "Getting " + os.path.join(class_id, path, bare)
-                        self.w.download(os.path.join(path, bare), bare)
+                            print "Getting " + l_fpath
 
-            os.chdir("..")
+                        self.w.download(e.name, l_fpath)
 
-        self.w.cd(uid)
-
-        if not os.path.exists(class_id):
-            os.makedirs(class_id)
-
-        os.chdir(class_id)
-        get_contents()
-
-        self.w.cd("..")
-
+        get_contents(path)
+        
 
 if __name__ == '__main__':    
     sr = ScholarRetriever(config.username, config.password,
